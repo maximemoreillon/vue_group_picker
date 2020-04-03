@@ -1,28 +1,30 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <GroupPicker
+      class="picker"
+      v-on:selection="selected($event)"
+      apiUrl="http://172.16.98.151:8097"/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import GroupPicker from './GroupPicker.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    GroupPicker
+  },
+  methods: {
+    selected(ev){
+      console.log(ev)
+    }
   }
 }
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+<style scoped>
+.picker{
+  height: 200px;
 }
 </style>
