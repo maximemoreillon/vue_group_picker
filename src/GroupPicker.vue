@@ -49,7 +49,7 @@ export default {
     get_highest_hierarchy_groups(){
       this.groups_loading = true;
 
-      axios.post(`${this.apiUrl}/get_highest_hierarchy_groups`, {})
+      axios.get(`${this.apiUrl}/top_level_groups`, {})
       .then(response => {
         this.groups.splice(0,this.groups.length)
         response.data.forEach((record) => {
@@ -71,9 +71,6 @@ export default {
 
 .group_picker {
 
-  margin: 10px;
-  padding: 10px;
-
   /* share space horizontally */
   flex-grow: 1;
   flex-shrink: 1;
@@ -81,8 +78,6 @@ export default {
 
   height: 100%;
   overflow-y: auto;
-
-  min-width: 300px;
 
   border: 1px solid #dddddd;
 }

@@ -23,7 +23,7 @@
       v-if="open"
       class="children_container">
 
-      <template v-if="!loading">
+      <template v-if="!loading && !error">
 
         <template v-if="groups.length>0">
           <group
@@ -36,12 +36,16 @@
 
         <!-- Indicator of no groups -->
         <div class="" v-else>
-          -
+          No group in {{group.properties.name}}
         </div>
 
       </template>
 
-      <Loader v-else/>
+      <Loader v-if="loading && !error"/>
+
+      <div class="" v-if="error">
+        {{error}}
+      </div>
 
     </div>
 
@@ -72,6 +76,7 @@ export default {
       open: false,
       groups: [],
       loading: false,
+      error: null,
 
     }
   },
@@ -86,8 +91,8 @@ export default {
     open_node(){
       this.open = true
       this.loading = true
-      axios.post(`${this.apiUrl}/get_groups_directly_belonging_to_group`, {
-        node_id: this.group.identity.low
+      axios.get(`${this.apiUrl}/groups_directly_belonging_to_group`, {
+        params: {id: this.group.identity.low}
       })
       .then(response => {
         this.groups.splice(0,this.groups.length)
@@ -96,8 +101,8 @@ export default {
           this.groups.push(group)
         })
       })
-      .catch( (error) => {
-        console.log(error)
+      .catch( () => {
+        this.error = `Error`
       })
       .finally( () => { this.loading = false })
     },
