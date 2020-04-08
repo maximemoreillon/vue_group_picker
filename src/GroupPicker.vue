@@ -7,7 +7,8 @@
         v-bind:group="group"
         v-bind:key="group.identity.low"
         v-bind:apiUrl="apiUrl"
-        v-on:selection="$emit('selection',$event)"/>
+        v-on:selection="$emit('selection',$event)"
+        v-bind:groupsOfUser="groups_of_user"/>
     </template>
 
     <!-- wrapper loader so it can be centered in the div -->
@@ -22,6 +23,7 @@
 <script>
 
 import axios from 'axios'
+import VueCookies from 'vue-cookies'
 import Group from './Group.vue'
 import Loader from '@moreillon/vue_loader'
 
@@ -32,7 +34,6 @@ export default {
   },
   components: {
     Group,
-
     Loader
   },
   data(){
@@ -40,16 +41,41 @@ export default {
       groups: [],
       groups_loading: false,
 
+      groups_of_user: [],
     }
   },
   mounted(){
-    this.get_highest_hierarchy_groups()
+    this.get_current_user()
+
   },
   methods: {
+    get_current_user(){
+      axios.get(`${this.apiUrl}/groups_of_user`, {
+        headers: {
+          Authorization: `Bearer ${VueCookies.get('jwt')}`
+        }
+      })
+      .then(response => {
+        this.groups_of_user.splice(0,this.groups_of_user.length)
+        response.data.forEach((record) => {
+          let group = record._fields[record._fieldLookup['group']]
+          this.groups_of_user.push(group)
+        });
+        
+      })
+      .catch( () => {})
+      .finally( () => {
+        this.get_highest_hierarchy_groups()
+      })
+
+
+
+    },
     get_highest_hierarchy_groups(){
+      console.log(this.groups_of_user)
       this.groups_loading = true;
 
-      axios.get(`${this.apiUrl}/top_level_groups`, {})
+      axios.get(`${this.apiUrl}/top_level_groups`)
       .then(response => {
         this.groups.splice(0,this.groups.length)
         response.data.forEach((record) => {

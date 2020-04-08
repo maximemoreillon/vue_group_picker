@@ -13,7 +13,7 @@
       <span
         class="node_name_container"
         v-on:click="$emit('selection',group)">
-        {{group.properties.original_name}}
+        {{group.properties.name}}
       </span>
 
     </div>
@@ -31,7 +31,8 @@
             v-bind:key="child.identity.low"
             v-bind:apiUrl="apiUrl"
             v-on:selection="$emit('selection',$event)"
-            v-bind:group="child"/>
+            v-bind:group="child"
+            v-bind:groupsOfUser="groupsOfUser"/>
           </template>
 
         <!-- Indicator of no groups -->
@@ -70,6 +71,7 @@ export default {
   props: {
     apiUrl: String,
     group: Object,
+    groupsOfUser: Array,
   },
   data(){
     return{
@@ -83,10 +85,16 @@ export default {
   mounted(){
 
     // Auto opening of user's units
-
-
+    this.auto_open()
   },
   methods: {
+    auto_open(){
+      //console.log(this.groupsOfUser)
+      let matching_group = this.groupsOfUser.find(group => {
+        return group.identity.low === this.group.identity.low
+      })
+      if(matching_group) this.open_node()
+    },
 
     open_node(){
       this.open = true
