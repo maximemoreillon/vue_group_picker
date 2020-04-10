@@ -3,7 +3,8 @@
     <GroupPicker
       class="picker"
       v-on:selection="selected($event)"
-      apiUrl="http://172.16.98.151:7000"/>
+      apiUrl="http://172.16.98.151:7000"
+      usersWithNoGroup/>
   </div>
 </template>
 

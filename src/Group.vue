@@ -135,7 +135,6 @@ export default {
 .current_node_container {
   display: flex;
   align-items: center;
-  margin: 1px;
 }
 
 .current_node_container > * {
