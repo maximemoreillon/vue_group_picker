@@ -4,17 +4,27 @@
     <div class="current_node_container">
 
       <!-- button to expand or contract the node -->
-      <chevron-right-icon
+      <font-awesome-icon
+        icon="chevron-right"
         class="expand_button"
         v-bind:class="{chevron_open: open}"
         v-on:click="toggle_node()"/>
 
-
-      <span
+      <div
         class="node_name_container"
         v-on:click="$emit('selection',group)">
+
+        <img
+        class="avatar"
+        v-if="group.properties.avatar_src"
+        v-bind:src="group.properties.avatar_src">
+
+        <font-awesome-icon
+        icon="users"
+        v-else/>
+
         {{group.properties.name}}
-      </span>
+      </div>
 
     </div>
 
@@ -37,7 +47,7 @@
 
         <!-- Indicator of no groups -->
         <div class="" v-else>
-          No group in {{group.properties.name}}
+          -
         </div>
 
       </template>
@@ -58,14 +68,25 @@ import axios from 'axios'
 import Loader from '@moreillon/vue_loader'
 
 import Group from './Group.vue'
-import ChevronRightIcon from 'vue-material-design-icons/ChevronRight.vue';
 
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import {
+  faUsers,
+  faChevronRight
+} from '@fortawesome/free-solid-svg-icons'
+
+library.add(
+  faUsers,
+  faChevronRight
+)
 export default {
   name: 'Group',
   components: {
     Loader,
     Group,
-    ChevronRightIcon,
+
+    FontAwesomeIcon,
 
   },
   props: {
@@ -135,6 +156,7 @@ export default {
 .current_node_container {
   display: flex;
   align-items: center;
+
 }
 
 .current_node_container > * {
@@ -147,10 +169,10 @@ export default {
 
   margin-right: 10px; /* space between button and name */
 
-  width: 18px;
-  height: 18px;
+  /* make container square for proper rotation */
+  width: 1em;
+  height: 1em;
 
-  font-size: 140%;
 
   display: flex;
   justify-content: center;
