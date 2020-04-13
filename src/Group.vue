@@ -24,7 +24,16 @@
         v-else/>
 
         {{group.properties.name}}
+
       </div>
+
+      <a
+        v-if="groupPageUrl"
+        :href="`${groupPageUrl}?id=${group.identity.low}`"
+        v-on:click.stop>
+        <font-awesome-icon
+          icon="info-circle"/>
+      </a>
 
     </div>
 
@@ -42,6 +51,7 @@
             v-bind:apiUrl="apiUrl"
             v-on:selection="$emit('selection',$event)"
             v-bind:group="child"
+            v-bind:groupPageUrl="groupPageUrl"
             v-bind:groupsOfUser="groupsOfUser"/>
           </template>
 
@@ -73,12 +83,14 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
   faUsers,
-  faChevronRight
+  faChevronRight,
+  faInfoCircle,
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
   faUsers,
-  faChevronRight
+  faChevronRight,
+  faInfoCircle
 )
 export default {
   name: 'Group',
@@ -93,6 +105,7 @@ export default {
     apiUrl: String,
     group: Object,
     groupsOfUser: Array,
+    groupPageUrl: String,
   },
   data(){
     return{
@@ -159,6 +172,10 @@ export default {
 
 }
 
+.current_node_container:hover {
+  background-color: #eeeeee;
+}
+
 .current_node_container > * {
   cursor: pointer;
 }
@@ -202,7 +219,7 @@ export default {
   text-overflow: ellipsis;
 }
 .node_name_container:hover{
-  color: #c00000;
+  //color: #c00000;
 }
 
 .children_container{
@@ -215,7 +232,15 @@ export default {
   border-left: 1px solid #dddddd;
 }
 
+a {
+  text-decoration: none;
+  color: currentColor;
+  transition: color 0.25s;
+}
 
+a:hover {
+  color: #c00000;
+}
 
 
 

@@ -4,6 +4,7 @@
       class="picker"
       v-on:selection="selected($event)"
       apiUrl="http://172.16.98.151:7000"
+      groupPageUrl="http://172.16.98.151:31097/group"
       usersWithNoGroup/>
   </div>
 </template>

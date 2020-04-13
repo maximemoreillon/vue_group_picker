@@ -18,6 +18,7 @@
         v-bind:group="group"
         v-bind:key="`official_group_${group.identity.low}`"
         v-bind:apiUrl="apiUrl"
+        v-bind:groupPageUrl="groupPageUrl"
         v-on:selection="$emit('selection',$event)"
         v-bind:groupsOfUser="groups_of_user"/>
 
@@ -32,6 +33,7 @@
         v-bind:group="group"
         v-bind:key="`non_official_group_${group.identity.low}`"
         v-bind:apiUrl="apiUrl"
+        v-bind:groupPageUrl="groupPageUrl"
         v-on:selection="$emit('selection',$event)"
         v-bind:groupsOfUser="groups_of_user"/>
 
@@ -45,6 +47,7 @@
         v-bind:group="group"
         v-bind:key="group.identity.low"
         v-bind:apiUrl="apiUrl"
+        v-bind:groupPageUrl="groupPageUrl"
         v-on:selection="$emit('selection',$event)"
         v-bind:groupsOfUser="groups_of_user"/>
 
@@ -68,6 +71,7 @@ export default {
   name: 'GroupPicker',
   props: {
     apiUrl: String,
+    groupPageUrl: String,
     usersWithNoGroup: {
       type: Boolean,
       default(){return false}
@@ -79,7 +83,8 @@ export default {
   },
   components: {
     Group,
-    Loader
+    Loader,
+
   },
   data(){
     return {
