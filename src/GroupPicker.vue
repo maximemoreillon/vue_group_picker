@@ -70,8 +70,15 @@ import Loader from '@moreillon/vue_loader'
 export default {
   name: 'GroupPicker',
   props: {
-    apiUrl: String,
-    groupPageUrl: String,
+    apiUrl: {
+      type: String,
+      default() { return process.env.VUE_APP_GROUP_MANAGER_API_URL }
+    },
+      String,
+    groupPageUrl: {
+      type: String,
+      default() { return `${process.env.VUE_APP_GROUP_MANAGER_FRONT_URL}/group` }
+    },
     usersWithNoGroup: {
       type: Boolean,
       default(){return false}
@@ -105,7 +112,7 @@ export default {
   },
   methods: {
     get_groups_of_current_user(){
-      axios.get(`${this.apiUrl}/groups_of_user`, {
+      axios.get(`${this.apiUrl}/members/self/groups`, {
         headers: {
           Authorization: `Bearer ${VueCookies.get('jwt')}`
         }
@@ -135,7 +142,7 @@ export default {
     get_all_top_level_groups(){
       this.groups_loading = true;
 
-      axios.get(`${this.apiUrl}/top_level_groups`)
+      axios.get(`${this.apiUrl}/groups/top_level`)
       .then(response => {
         this.groups.splice(0,this.groups.length)
         response.data.forEach((record) => {
@@ -151,7 +158,7 @@ export default {
       //
       this.official_groups_loading = true;
 
-      axios.get(`${this.apiUrl}/top_level_groups/official`)
+      axios.get(`${this.apiUrl}/groups/top_level/official`)
       .then(response => {
         this.official_groups.splice(0,this.official_groups.length)
         response.data.forEach((record) => {
@@ -169,7 +176,7 @@ export default {
       //
       this.non_official_groups_loading = true;
 
-      axios.get(`${this.apiUrl}/top_level_groups/non_official`)
+      axios.get(`${this.apiUrl}/groups/top_level/non_official`)
       .then(response => {
         this.non_official_groups.splice(0,this.non_official_groups.length)
         response.data.forEach((record) => {

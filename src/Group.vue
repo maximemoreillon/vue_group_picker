@@ -242,6 +242,11 @@ a:hover {
   color: #c00000;
 }
 
+.avatar {
+  height: 1em;
+  width: 1em;
+  object-fit: contain;
+}
 
 
 </style>
