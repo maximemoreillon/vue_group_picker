@@ -1,60 +1,60 @@
 <template>
-
   <div class="group_picker">
 
-    <div
-      v-if="usersWithNoGroup"
-      class="users_with_no_group"
-      v-on:click="$emit('selection', null)">
-      Users with no group
-    </div>
+    <div class="spacing_wrapper">
+      <div
+        v-if="usersWithNoGroup"
+        class="users_with_no_group category_title"
+        v-on:click="$emit('selection', null)">
+        Users with no group
+      </div>
 
-    <!-- Bookmarked groups -->
-    <template
-      v-if="!official_groups_loading && official_groups.length > 0">
+      <!-- Bookmarked groups -->
       <div class="category_title">Official groups</div>
-      <Group
-        v-for="group in official_groups"
-        v-bind:group="group"
-        v-bind:key="`official_group_${group.identity.low}`"
-        v-bind:apiUrl="apiUrl"
-        v-bind:groupPageUrl="groupPageUrl"
-        v-on:selection="$emit('selection',$event)"
-        v-bind:groupsOfUser="groups_of_user"/>
+      <template
+        v-if="!official_groups_loading && official_groups.length > 0">
 
-    </template>
-    <loader v-if="official_groups_loading"/>
+        <Group
+          v-for="group in official_groups"
+          v-bind:group="group"
+          v-bind:key="`official_group_${group.identity.low}`"
+          v-bind:apiUrl="apiUrl"
+          v-bind:groupPageUrl="groupPageUrl"
+          v-on:selection="$emit('selection',$event)"
+          v-bind:groupsOfUser="groups_of_user"/>
 
-    <template
-      v-if="!non_official_groups_loading && non_official_groups.length > 0">
+      </template>
+      <loader v-if="official_groups_loading"/>
+
       <div class="category_title">Non-official groups</div>
-      <Group
-        v-for="group in non_official_groups"
-        v-bind:group="group"
-        v-bind:key="`non_official_group_${group.identity.low}`"
-        v-bind:apiUrl="apiUrl"
-        v-bind:groupPageUrl="groupPageUrl"
-        v-on:selection="$emit('selection',$event)"
-        v-bind:groupsOfUser="groups_of_user"/>
+      <template
+        v-if="!non_official_groups_loading && non_official_groups.length > 0">
+        <Group
+          v-for="group in non_official_groups"
+          v-bind:group="group"
+          v-bind:key="`non_official_group_${group.identity.low}`"
+          v-bind:apiUrl="apiUrl"
+          v-bind:groupPageUrl="groupPageUrl"
+          v-on:selection="$emit('selection',$event)"
+          v-bind:groupsOfUser="groups_of_user"/>
 
-    </template>
-    <loader v-if="non_official_groups_loading"/>
+      </template>
+      <loader v-if="non_official_groups_loading"/>
 
-    <template v-if="!groups_loading && groups.length > 0">
-      <div class="category_title">All groups</div>
-      <Group
-        v-for="group in groups"
-        v-bind:group="group"
-        v-bind:key="group.identity.low"
-        v-bind:apiUrl="apiUrl"
-        v-bind:groupPageUrl="groupPageUrl"
-        v-on:selection="$emit('selection',$event)"
-        v-bind:groupsOfUser="groups_of_user"/>
+      <template v-if="!groups_loading && groups.length > 0">
+        <div class="category_title">All groups</div>
+        <Group
+          v-for="group in groups"
+          v-bind:group="group"
+          v-bind:key="group.identity.low"
+          v-bind:apiUrl="apiUrl"
+          v-bind:groupPageUrl="groupPageUrl"
+          v-on:selection="$emit('selection',$event)"
+          v-bind:groupsOfUser="groups_of_user"/>
 
-    </template>
-    <loader v-if="groups_loading"/>
-
-
+      </template>
+      <loader v-if="groups_loading"/>
+    </div>
 
   </div>
 
@@ -77,7 +77,12 @@ export default {
       String,
     groupPageUrl: {
       type: String,
-      default() { return `${process.env.VUE_APP_GROUP_MANAGER_FRONT_URL}/group` }
+      default() {
+          if(process.env.VUE_APP_GROUP_MANAGER_FRONT_URL) {
+            return `${process.env.VUE_APP_GROUP_MANAGER_FRONT_URL}/group`
+          }
+          else return null
+        }
     },
     usersWithNoGroup: {
       type: Boolean,
@@ -228,6 +233,12 @@ export default {
 
 .category_title {
   font-weight: bold;
+  margin: 0.75em 0;
+}
+
+
+.spacing_wrapper {
+  margin: 0.5em;
 }
 
 </style>

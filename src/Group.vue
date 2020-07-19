@@ -6,33 +6,42 @@
       <!-- button to expand or contract the node -->
       <font-awesome-icon
         icon="chevron-right"
+        v-if="!empty"
         class="expand_button"
         v-bind:class="{chevron_open: open}"
         v-on:click="toggle_node()"/>
+
+      <font-awesome-icon
+        icon="minus"
+        v-else/>
+
 
       <div
         class="node_name_container"
         v-on:click="$emit('selection',group)">
 
         <img
-        class="avatar"
-        v-if="group.properties.avatar_src"
-        v-bind:src="group.properties.avatar_src">
+          class="avatar"
+          v-if="group.properties.avatar_src"
+          v-bind:src="group.properties.avatar_src">
 
         <font-awesome-icon
-        icon="users"
-        v-else/>
+          icon="users"
+          v-else/>
 
-        {{group.properties.name}}
+        <span>
+          {{group.properties.name || 'Unnamed group'}}
+        </span>
 
       </div>
 
+      <!-- Link to the group page -->
       <a
         v-if="groupPageUrl"
         :href="`${groupPageUrl}?id=${group.identity.low}`"
         v-on:click.stop>
         <font-awesome-icon
-          icon="info-circle"/>
+          icon="external-link-alt"/>
       </a>
 
     </div>
@@ -44,21 +53,14 @@
 
       <template v-if="!loading && !error">
 
-        <template v-if="groups.length>0">
-          <group
-            v-for="child in groups"
-            v-bind:key="child.identity.low"
-            v-bind:apiUrl="apiUrl"
-            v-on:selection="$emit('selection',$event)"
-            v-bind:group="child"
-            v-bind:groupPageUrl="groupPageUrl"
-            v-bind:groupsOfUser="groupsOfUser"/>
-          </template>
-
-        <!-- Indicator of no groups -->
-        <div class="" v-else>
-          -
-        </div>
+        <group
+          v-for="child in groups"
+          v-bind:key="child.identity.low"
+          v-bind:apiUrl="apiUrl"
+          v-on:selection="$emit('selection', $event)"
+          v-bind:group="child"
+          v-bind:groupPageUrl="groupPageUrl"
+          v-bind:groupsOfUser="groupsOfUser"/>
 
       </template>
 
@@ -84,13 +86,17 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import {
   faUsers,
   faChevronRight,
+  faMinus,
   faInfoCircle,
+  faExternalLinkAlt,
 } from '@fortawesome/free-solid-svg-icons'
 
 library.add(
   faUsers,
   faChevronRight,
-  faInfoCircle
+  faInfoCircle,
+  faMinus,
+  faExternalLinkAlt,
 )
 export default {
   name: 'Group',
@@ -113,6 +119,7 @@ export default {
       groups: [],
       loading: false,
       error: null,
+      empty: false,
 
     }
   },
@@ -138,10 +145,13 @@ export default {
       })
       .then(response => {
         this.groups.splice(0,this.groups.length)
-        response.data.forEach((record) => {
-          let group = record._fields[record._fieldLookup['group']]
-          this.groups.push(group)
-        })
+        if(response.data.length === 0 ) this.empty = true
+        else {
+          response.data.forEach((record) => {
+            let group = record._fields[record._fieldLookup['group']]
+            this.groups.push(group)
+          })
+        }
       })
       .catch( () => {
         this.error = `Error`
@@ -165,10 +175,14 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
+.group {
+  margin: 0.25em 0;
+}
 
 .current_node_container {
   display: flex;
   align-items: center;
+  transition: background-color 0.25s;
 
 }
 
@@ -184,7 +198,6 @@ export default {
 .expand_button{
   /* center button in div */
 
-  margin-right: 10px; /* space between button and name */
 
   /* make container square for proper rotation */
   width: 1em;
@@ -211,6 +224,7 @@ export default {
 }
 
 .node_name_container {
+  margin-left: 0.5em;
   flex-grow: 1;
   transition: color 0.25s;
 
@@ -218,8 +232,9 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.node_name_container:hover{
-  //color: #c00000;
+
+.node_name_container > *:not(:last-child) {
+  margin-right: 0.5em;
 }
 
 .children_container{
@@ -227,8 +242,8 @@ export default {
   /* content of this is a CorporateStructureNode */
 
   /* compound spacing for border indicating ident */
-  padding-left: 9px; /* indent for children nodes */
-  margin-left: 9px; /* indent for children nodes */
+  padding-left: 0.5em; /* indent for children nodes */
+  margin-left: 0.5em; /* indent for children nodes */
   border-left: 1px solid #dddddd;
 }
 
