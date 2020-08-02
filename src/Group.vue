@@ -36,9 +36,10 @@
       </div>
 
       <!-- Link to the group page -->
+      <!-- TODO: Use new format -->
       <a
         v-if="groupPageUrl"
-        :href="`${groupPageUrl}?id=${group.identity.low}`"
+        :href="`${groupPageUrl}/groups/${group.identity.low}`"
         v-on:click.stop>
         <font-awesome-icon
           icon="external-link-alt"/>
