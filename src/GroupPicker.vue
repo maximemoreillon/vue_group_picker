@@ -1,15 +1,12 @@
 <template>
   <div class="group_picker">
 
+    <!-- spacing wrapper used as artificial margin -->
     <div class="spacing_wrapper">
-      <div
-        v-if="usersWithNoGroup"
-        class="users_with_no_group category_title"
-        v-on:click="$emit('selection', null)">
-        Users with no group
-      </div>
 
-      <!-- Bookmarked groups -->
+
+
+      <!-- Official (non-user-made) groups -->
       <div class="category_title">Official groups</div>
       <template
         v-if="!official_groups_loading && official_groups.length > 0">
@@ -54,6 +51,20 @@
 
       </template>
       <loader v-if="groups_loading"/>
+
+      <div class="category_title">Other</div>
+      <div class="group_container">
+        <font-awesome-icon
+          icon="minus"/>
+          <div
+            v-if="usersWithNoGroup"
+            class="group_name_container"
+            v-on:click="$emit('selection', null)">
+            <font-awesome-icon icon="users"/>
+            <span>Users with no group</span>
+          </div>
+      </div>
+
     </div>
 
   </div>
@@ -67,14 +78,33 @@ import VueCookies from 'vue-cookies'
 import Group from './Group.vue'
 import Loader from '@moreillon/vue_loader'
 
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import {
+  faUsers,
+  faChevronRight,
+  faMinus,
+  faInfoCircle,
+  faExternalLinkAlt,
+} from '@fortawesome/free-solid-svg-icons'
+
+library.add(
+  faUsers,
+  faChevronRight,
+  faInfoCircle,
+  faMinus,
+  faExternalLinkAlt,
+)
+
 export default {
   name: 'GroupPicker',
   props: {
     apiUrl: {
       type: String,
-      default() { return process.env.VUE_APP_GROUP_MANAGER_API_URL }
+      default() {
+        return process.env.VUE_APP_GROUP_MANAGER_API_URL
+      }
     },
-      String,
     groupPageUrl: {
       type: String,
       default() {
@@ -96,6 +126,8 @@ export default {
   components: {
     Group,
     Loader,
+    FontAwesomeIcon,
+
 
   },
   data(){
@@ -202,22 +234,10 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
-.users_with_no_group{
-  cursor: pointer;
-  transition: background-color 0.25s;
-  font-weight: bold;
-}
-.users_with_no_group:hover {
-  color: #c00000;
-}
+
 .group_picker {
 
-  /* share space horizontally */
-  flex-grow: 1;
-  flex-shrink: 1;
-  flex-basis: 0;
-
-  height: 100%;
+  /* put height 100%? */
   overflow-y: auto;
 
   border: 1px solid #dddddd;
@@ -240,5 +260,40 @@ export default {
 .spacing_wrapper {
   margin: 0.5em;
 }
+
+/* for the "users with no groups" groups */
+.group_container {
+  display: flex;
+  align-items: center;
+  transition: background-color 0.25s;
+}
+
+.group_container:hover {
+  background-color: #eeeeee;
+}
+
+.group_container > * {
+  cursor: pointer;
+}
+
+.group_name_container {
+  margin-left: 0.5em;
+  flex-grow: 1;
+  transition: color 0.25s;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.group_name_container > *:not(:last-child) {
+  margin-right: 0.5em;
+}
+
+.group_name_container{
+  cursor: pointer;
+  transition: background-color 0.25s;
+}
+
 
 </style>

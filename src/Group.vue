@@ -1,7 +1,7 @@
 <template>
   <div class="group">
 
-    <div class="current_node_container">
+    <div class="current_group_container">
 
       <!-- button to expand or contract the node -->
       <font-awesome-icon
@@ -17,7 +17,7 @@
 
 
       <div
-        class="node_name_container"
+        class="group_name_container"
         v-on:click="$emit('selection',group)">
 
         <img
@@ -172,25 +172,24 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 
 .group {
+  /* vertical margin between groups */
   margin: 0.25em 0;
 }
 
-.current_node_container {
+.current_group_container {
   display: flex;
   align-items: center;
   transition: background-color 0.25s;
-
 }
 
-.current_node_container:hover {
+.current_group_container:hover {
   background-color: #eeeeee;
 }
 
-.current_node_container > * {
+.current_group_container > * {
   cursor: pointer;
 }
 
@@ -223,7 +222,7 @@ export default {
   transform: rotate(90deg);
 }
 
-.node_name_container {
+.group_name_container {
   margin-left: 0.5em;
   flex-grow: 1;
   transition: color 0.25s;
@@ -233,7 +232,7 @@ export default {
   text-overflow: ellipsis;
 }
 
-.node_name_container > *:not(:last-child) {
+.group_name_container > *:not(:last-child) {
   margin-right: 0.5em;
 }
 
