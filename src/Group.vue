@@ -67,7 +67,7 @@
 
       <Loader v-if="loading && !error"/>
 
-      <div class="" v-if="error">
+      <div class="error_message" v-if="error">
         {{error}}
       </div>
 
@@ -78,9 +78,11 @@
 
 <script>
 import axios from 'axios'
+//import VueCookies from 'vue-cookies'
 import Loader from '@moreillon/vue_loader'
 
 import Group from './Group.vue'
+
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -112,7 +114,12 @@ export default {
     apiUrl: String,
     group: Object,
     groupsOfUser: Array,
-    groupPageUrl: String,
+    groupPageUrl: {
+      type: String,
+      default() {
+        return process.env.VUE_APP_GROUP_MANAGER_FRONT_URL
+      },
+    }
   },
   data(){
     return{
@@ -141,9 +148,7 @@ export default {
     open_node(){
       this.open = true
       this.loading = true
-      axios.get(`${this.apiUrl}/groups_directly_belonging_to_group`, {
-        params: {id: this.group.identity.low}
-      })
+      axios.get(`${this.apiUrl}/groups/${this.group.identity.low}/groups/direct`)
       .then(response => {
         this.groups.splice(0,this.groups.length)
         if(response.data.length === 0 ) this.empty = true

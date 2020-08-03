@@ -3,8 +3,6 @@
     <GroupPicker
       class="picker"
       v-on:selection="selected($event)"
-      apiUrl="http://172.16.98.151:31999"
-      groupPageUrl="http://172.16.98.151:31097/group"
       usersWithNoGroup/>
   </div>
 </template>
@@ -27,6 +25,6 @@ export default {
 
 <style scoped>
 .picker{
-  height: 200px;
+  height: 500px;
 }
 </style>

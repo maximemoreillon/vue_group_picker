@@ -4,12 +4,10 @@
     <!-- spacing wrapper used as artificial margin -->
     <div class="spacing_wrapper">
 
-
-
       <!-- Official (non-user-made) groups -->
       <div class="category_title">Official groups</div>
       <template
-        v-if="!official_groups_loading && official_groups.length > 0">
+        v-if="!official_groups.loading && official_groups.length > 0">
 
         <Group
           v-for="group in official_groups"
@@ -21,11 +19,16 @@
           v-bind:groupsOfUser="groups_of_user"/>
 
       </template>
-      <loader v-if="official_groups_loading"/>
+      <loader v-if="official_groups.loading"/>
+      <div
+        class="error_message"
+        v-if="official_groups.error">
+        Error loading groups
+      </div>
 
       <div class="category_title">Non-official groups</div>
       <template
-        v-if="!non_official_groups_loading && non_official_groups.length > 0">
+        v-if="!non_official_groups.loading && non_official_groups.length > 0">
         <Group
           v-for="group in non_official_groups"
           v-bind:group="group"
@@ -36,9 +39,14 @@
           v-bind:groupsOfUser="groups_of_user"/>
 
       </template>
-      <loader v-if="non_official_groups_loading"/>
+      <loader v-if="non_official_groups.loading"/>
+      <div
+        class="error_message"
+        v-if="non_official_groups.error">
+        Error loading groups
+      </div>
 
-      <template v-if="!groups_loading && groups.length > 0">
+      <template v-if="!groups.loading && groups.length > 0">
         <div class="category_title">All groups</div>
         <Group
           v-for="group in groups"
@@ -50,7 +58,12 @@
           v-bind:groupsOfUser="groups_of_user"/>
 
       </template>
-      <loader v-if="groups_loading"/>
+      <loader v-if="groups.loading"/>
+      <div
+        class="error_message"
+        v-if="groups.error">
+        Error loading groups
+      </div>
 
       <div class="category_title">Other</div>
       <div class="group_container">
@@ -107,12 +120,6 @@ export default {
     },
     groupPageUrl: {
       type: String,
-      default() {
-          if(process.env.VUE_APP_GROUP_MANAGER_FRONT_URL) {
-            return `${process.env.VUE_APP_GROUP_MANAGER_FRONT_URL}/group`
-          }
-          else return null
-        }
     },
     usersWithNoGroup: {
       type: Boolean,
@@ -145,21 +152,20 @@ export default {
     }
   },
   mounted(){
+    if(VueCookies.get('jwt') && !axios.defaults.headers.common.Authorization){
+      axios.defaults.headers.common['Authorization'] = `Bearer ${VueCookies.get('jwt')}`
+    }
     this.get_groups_of_current_user()
   },
   methods: {
     get_groups_of_current_user(){
-      axios.get(`${this.apiUrl}/members/self/groups`, {
-        headers: {
-          Authorization: `Bearer ${VueCookies.get('jwt')}`
-        }
-      })
+      axios.get(`${this.apiUrl}/members/self/groups`)
       .then(response => {
         this.groups_of_user.splice(0,this.groups_of_user.length)
         response.data.forEach((record) => {
           let group = record._fields[record._fieldLookup['group']]
           this.groups_of_user.push(group)
-        });
+        })
 
       })
       .catch( () => {})
@@ -177,7 +183,7 @@ export default {
       })
     },
     get_all_top_level_groups(){
-      this.groups_loading = true;
+      this.$set(this.groups,'loading', true)
 
       axios.get(`${this.apiUrl}/groups/top_level`)
       .then(response => {
@@ -188,12 +194,15 @@ export default {
         });
 
       })
-      .catch( (error) => { console.log(error) })
-      .finally( () => { this.groups_loading = false })
+      .catch( (error) => {
+        console.error(error)
+        this.$set(this.groups,'error', true)
+      })
+      .finally( () => { this.$set(this.groups,'loading', false) })
     },
     get_top_level_official_groups(){
       //
-      this.official_groups_loading = true;
+      this.$set(this.official_groups,'loading', true)
 
       axios.get(`${this.apiUrl}/groups/top_level/official`)
       .then(response => {
@@ -204,14 +213,17 @@ export default {
         });
 
       })
-      .catch( (error) => { console.log(error) })
-      .finally( () => { this.official_groups_loading = false })
+      .catch( (error) => {
+        console.error(error)
+        this.$set(this.official_groups,'error', true)
+      })
+      .finally( () => { this.$set(this.official_groups,'loading', false) })
 
     },
 
     get_top_level_non_official_groups(){
       //
-      this.non_official_groups_loading = true;
+      this.$set(this.non_official_groups,'loading', true)
 
       axios.get(`${this.apiUrl}/groups/top_level/non_official`)
       .then(response => {
@@ -219,11 +231,13 @@ export default {
         response.data.forEach((record) => {
           let group = record._fields[record._fieldLookup['group']]
           this.non_official_groups.push(group)
-        });
-
+        })
       })
-      .catch( (error) => { console.log(error) })
-      .finally( () => { this.non_official_groups_loading = false })
+      .catch( (error) => {
+        console.error(error)
+        this.$set(this.non_official_groups,'error', true)
+      })
+      .finally( () => { this.$set(this.non_official_groups,'loading', false) })
 
     },
 
@@ -295,5 +309,7 @@ export default {
   transition: background-color 0.25s;
 }
 
-
+.error_message {
+  color: #c00000;
+}
 </style>
