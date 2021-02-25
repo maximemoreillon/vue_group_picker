@@ -12,9 +12,9 @@
         <Group
           v-for="group in official_groups"
           v-bind:group="group"
-          v-bind:key="`official_group_${group.identity.low}`"
-          v-bind:apiUrl="apiUrl"
-          v-bind:groupPageUrl="groupPageUrl"
+          v-bind:key="`official_group_${JSON.stringify(group.identity)}`"
+          v-bind:groupManagerApiUrl="groupManagerApiUrl"
+          v-bind:groupManagerFrontUrl="groupManagerFrontUrl"
           v-on:selection="$emit('selection',$event)"
           v-bind:groupsOfUser="groups_of_user"/>
 
@@ -32,9 +32,9 @@
         <Group
           v-for="group in non_official_groups"
           v-bind:group="group"
-          v-bind:key="`non_official_group_${group.identity.low}`"
-          v-bind:apiUrl="apiUrl"
-          v-bind:groupPageUrl="groupPageUrl"
+          v-bind:key="`non_official_group_${JSON.stringify(group.identity)}`"
+          v-bind:groupManagerApiUrl="groupManagerApiUrl"
+          v-bind:groupManagerFrontUrl="groupManagerFrontUrl"
           v-on:selection="$emit('selection',$event)"
           v-bind:groupsOfUser="groups_of_user"/>
 
@@ -51,9 +51,9 @@
         <Group
           v-for="group in groups"
           v-bind:group="group"
-          v-bind:key="group.identity.low"
-          v-bind:apiUrl="apiUrl"
-          v-bind:groupPageUrl="groupPageUrl"
+          v-bind:key="JSON.stringify(group.identity)"
+          v-bind:groupManagerApiUrl="groupManagerApiUrl"
+          v-bind:groupManagerFrontUrl="groupManagerFrontUrl"
           v-on:selection="$emit('selection',$event)"
           v-bind:groupsOfUser="groups_of_user"/>
 
@@ -65,18 +65,19 @@
         Error loading groups
       </div>
 
-      <div class="category_title">Other</div>
-      <div class="group_container">
-        <font-awesome-icon
-          icon="minus"/>
-          <div
-            v-if="usersWithNoGroup"
-            class="group_name_container"
-            v-on:click="$emit('selection', null)">
-            <font-awesome-icon icon="users"/>
-            <span>Users with no group</span>
-          </div>
-      </div>
+      <template v-if="usersWithNoGroup">
+        <div class="category_title">Other</div>
+        <div class="group_container">
+          <font-awesome-icon
+            icon="minus"/>
+            <div
+              class="group_name_container"
+              v-on:click="$emit('selection', null)">
+              <font-awesome-icon icon="users"/>
+              <span>Users with no group</span>
+            </div>
+        </div>
+      </template>
 
     </div>
 
@@ -112,14 +113,17 @@ library.add(
 export default {
   name: 'GroupPicker',
   props: {
-    apiUrl: {
+    groupManagerApiUrl: {
       type: String,
       default() {
         return process.env.VUE_APP_GROUP_MANAGER_API_URL
       }
     },
-    groupPageUrl: {
+    groupManagerFrontUrl: {
       type: String,
+      default() {
+        return process.env.VUE_APP_GROUP_MANAGER_FRONT_URL
+      }
     },
     usersWithNoGroup: {
       type: Boolean,
@@ -159,7 +163,7 @@ export default {
   },
   methods: {
     get_groups_of_current_user(){
-      axios.get(`${this.apiUrl}/members/self/groups`)
+      axios.get(`${this.groupManagerApiUrl}/members/self/groups`)
       .then(response => {
         this.groups_of_user.splice(0,this.groups_of_user.length)
         response.data.forEach((record) => {
@@ -185,7 +189,7 @@ export default {
     get_all_top_level_groups(){
       this.$set(this.groups,'loading', true)
 
-      axios.get(`${this.apiUrl}/groups/top_level`)
+      axios.get(`${this.groupManagerApiUrl}/groups/top_level`)
       .then(response => {
         this.groups.splice(0,this.groups.length)
         response.data.forEach((record) => {
@@ -204,7 +208,7 @@ export default {
       //
       this.$set(this.official_groups,'loading', true)
 
-      axios.get(`${this.apiUrl}/groups/top_level/official`)
+      axios.get(`${this.groupManagerApiUrl}/groups/top_level/official`)
       .then(response => {
         this.official_groups.splice(0,this.official_groups.length)
         response.data.forEach((record) => {
@@ -225,7 +229,7 @@ export default {
       //
       this.$set(this.non_official_groups,'loading', true)
 
-      axios.get(`${this.apiUrl}/groups/top_level/non_official`)
+      axios.get(`${this.groupManagerApiUrl}/groups/top_level/non_official`)
       .then(response => {
         this.non_official_groups.splice(0,this.non_official_groups.length)
         response.data.forEach((record) => {

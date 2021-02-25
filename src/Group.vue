@@ -36,10 +36,9 @@
       </div>
 
       <!-- Link to the group page -->
-      <!-- TODO: Use new format -->
       <a
-        v-if="groupPageUrl"
-        :href="`${groupPageUrl}/groups/${group.identity.low}`"
+        v-if="groupManagerFrontUrl"
+        :href="`${groupManagerFrontUrl}/groups/${group_id}`"
         v-on:click.stop>
         <font-awesome-icon
           icon="external-link-alt"/>
@@ -56,11 +55,10 @@
 
         <group
           v-for="child in groups"
-          v-bind:key="child.identity.low"
-          v-bind:apiUrl="apiUrl"
+          v-bind:key="JSON.stringify(child.identity)"
+          v-bind:groupManagerApiUrl="groupManagerApiUrl"
           v-on:selection="$emit('selection', $event)"
           v-bind:group="child"
-          v-bind:groupPageUrl="groupPageUrl"
           v-bind:groupsOfUser="groupsOfUser"/>
 
       </template>
@@ -111,15 +109,17 @@ export default {
 
   },
   props: {
-    apiUrl: String,
+    groupManagerApiUrl: {
+      type: String,
+      default() { return process.env.VUE_APP_GROUP_MANAGER_URL },
+    },
+    groupManagerFrontUrl: {
+      type: String,
+      default() { return process.env.VUE_APP_GROUP_MANAGER_FRONT_URL },
+    },
+
     group: Object,
     groupsOfUser: Array,
-    groupPageUrl: {
-      type: String,
-      default() {
-        return process.env.VUE_APP_GROUP_MANAGER_FRONT_URL
-      },
-    }
   },
   data(){
     return{
@@ -138,9 +138,8 @@ export default {
   },
   methods: {
     auto_open(){
-      //console.log(this.groupsOfUser)
-      let matching_group = this.groupsOfUser.find(group => {
-        return group.identity.low === this.group.identity.low
+      const matching_group = this.groupsOfUser.find(group_of_user => {
+        return JSON.stringify(group_of_user.identity) === JSON.stringify(this.group.identity)
       })
       if(matching_group) this.open_node()
     },
@@ -148,7 +147,8 @@ export default {
     open_node(){
       this.open = true
       this.loading = true
-      axios.get(`${this.apiUrl}/groups/${this.group.identity.low}/groups/direct`)
+      const url = `${this.groupManagerApiUrl}/groups/${this.group_id}/groups/direct`
+      axios.get(url)
       .then(response => {
         this.groups.splice(0,this.groups.length)
         if(response.data.length === 0 ) this.empty = true
@@ -173,7 +173,10 @@ export default {
     }
   },
   computed: {
-
+    group_id(){
+      return this.group.identity.low
+        || this.group.identity
+    }
   }
 }
 </script>
