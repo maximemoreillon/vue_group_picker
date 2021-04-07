@@ -72,7 +72,7 @@
             icon="minus"/>
             <div
               class="group_name_container"
-              v-on:click="$emit('selection', null)">
+              v-on:click="$emit('selection', {identity: 'none'})">
               <font-awesome-icon icon="users"/>
               <span>Users with no group</span>
             </div>
@@ -156,8 +156,9 @@ export default {
     }
   },
   mounted(){
-    if(VueCookies.get('jwt') && !axios.defaults.headers.common.Authorization){
-      axios.defaults.headers.common['Authorization'] = `Bearer ${VueCookies.get('jwt')}`
+    const jwt = VueCookies.get('jwt')
+    if( jwt && !axios.defaults.headers.common.Authorization){
+      axios.defaults.headers.common['Authorization'] = `Bearer ${jwt}`
     }
     this.get_groups_of_current_user()
   },
