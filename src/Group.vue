@@ -139,7 +139,7 @@ export default {
   methods: {
     auto_open(){
       const matching_group = this.groupsOfUser.find(group_of_user => {
-        return JSON.stringify(group_of_user.identity) === JSON.stringify(this.group.identity)
+        return group_of_user.identity === this.group.identity
       })
       if(matching_group) this.open_node()
     },
@@ -147,21 +147,10 @@ export default {
     open_node(){
       this.open = true
       this.loading = true
-      const url = `${this.groupManagerApiUrl}/groups/${this.group_id}/groups/direct`
+      const url = `${this.groupManagerApiUrl}/v2/groups/${this.group_id}/groups/direct`
       axios.get(url)
-      .then(response => {
-        this.groups.splice(0,this.groups.length)
-        if(response.data.length === 0 ) this.empty = true
-        else {
-          response.data.forEach((record) => {
-            let group = record._fields[record._fieldLookup['group']]
-            this.groups.push(group)
-          })
-        }
-      })
-      .catch( () => {
-        this.error = `Error`
-      })
+      .then( ({data}) => { this.groups = data })
+      .catch( () => { this.error = `Error` })
       .finally( () => { this.loading = false })
     },
     close_node(){
@@ -174,8 +163,7 @@ export default {
   },
   computed: {
     group_id(){
-      return this.group.identity.low
-        || this.group.identity
+      return this.group.identity
     }
   }
 }
