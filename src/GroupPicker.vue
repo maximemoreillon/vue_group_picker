@@ -181,6 +181,7 @@ export default {
       })
     },
     get_all_top_level_groups(){
+
       this.$set(this.groups,'loading', true)
 
       axios.get(`${this.groupManagerApiUrl}/v2/groups/top_level`)
