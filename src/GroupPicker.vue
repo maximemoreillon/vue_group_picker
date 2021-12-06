@@ -156,7 +156,7 @@ export default {
     }
   },
   mounted(){
-    const jwt = VueCookies.get('jwt')
+    const jwt = VueCookies.get('jwt') || VueCookies.get('token')
     if( jwt && !axios.defaults.headers.common.Authorization){
       axios.defaults.headers.common['Authorization'] = `Bearer ${jwt}`
     }
