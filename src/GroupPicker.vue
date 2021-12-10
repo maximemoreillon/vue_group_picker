@@ -7,19 +7,19 @@
       <!-- Official (non-user-made) groups -->
       <div class="category_title">Official groups</div>
       <template
-        v-if="!official_groups.loading && official_groups.length > 0">
+        v-if="!official_groups_loading && official_groups.length">
 
         <Group
-          v-for="group in official_groups"
-          v-bind:group="group"
-          v-bind:key="`official_group_${group.identity}`"
-          v-bind:groupManagerApiUrl="groupManagerApiUrl"
-          v-bind:groupManagerFrontUrl="groupManagerFrontUrl"
+          v-for="(group, index) in official_groups"
+          :group="group"
+          :key="`official_group_${index}`"
+          :groupManagerApiUrl="groupManagerApiUrl"
+          :groupManagerFrontUrl="groupManagerFrontUrl"
           v-on:selection="$emit('selection',$event)"
-          v-bind:groupsOfUser="groups_of_user"/>
+          :groupsOfUser="groups_of_user"/>
 
       </template>
-      <loader v-if="official_groups.loading"/>
+      <loader v-if="official_groups_loading"/>
       <div
         class="error_message"
         v-if="official_groups.error">
@@ -28,40 +28,40 @@
 
       <div class="category_title">Non-official groups</div>
       <template
-        v-if="!non_official_groups.loading && non_official_groups.length > 0">
+        v-if="!non_official_groups_loading && non_official_groups.length">
         <Group
-          v-for="group in non_official_groups"
-          v-bind:group="group"
-          v-bind:key="`non_official_group_${group.identity}`"
-          v-bind:groupManagerApiUrl="groupManagerApiUrl"
-          v-bind:groupManagerFrontUrl="groupManagerFrontUrl"
+          v-for="(group, index) in non_official_groups"
+          :group="group"
+          :key="`non_official_group_${index}`"
+          :groupManagerApiUrl="groupManagerApiUrl"
+          :groupManagerFrontUrl="groupManagerFrontUrl"
           v-on:selection="$emit('selection',$event)"
-          v-bind:groupsOfUser="groups_of_user"/>
+          :groupsOfUser="groups_of_user"/>
 
       </template>
-      <loader v-if="non_official_groups.loading"/>
+      <loader v-if="non_official_groups_loading"/>
       <div
         class="error_message"
-        v-if="non_official_groups.error">
+        v-if="non_official_groups_error">
         Error loading groups
       </div>
 
-      <template v-if="!groups.loading && groups.length > 0">
+      <template v-if="!groups_loading && groups.length">
         <div class="category_title">All groups</div>
         <Group
-          v-for="group in groups"
-          v-bind:group="group"
-          v-bind:key="JSON.stringify(group.identity)"
-          v-bind:groupManagerApiUrl="groupManagerApiUrl"
-          v-bind:groupManagerFrontUrl="groupManagerFrontUrl"
+          v-for="(group, index) in groups"
+          :group="group"
+          :key="`any_${index}`"
+          :groupManagerApiUrl="groupManagerApiUrl"
+          :groupManagerFrontUrl="groupManagerFrontUrl"
           v-on:selection="$emit('selection',$event)"
-          v-bind:groupsOfUser="groups_of_user"/>
+          :groupsOfUser="groups_of_user"/>
 
       </template>
-      <loader v-if="groups.loading"/>
+      <loader v-if="groups_loading"/>
       <div
         class="error_message"
-        v-if="groups.error">
+        v-if="groups_error">
         Error loading groups
       </div>
 
@@ -70,9 +70,11 @@
         <div class="group_container">
           <font-awesome-icon
             icon="minus"/>
+
+          <!-- This return is stupid -->
           <div
             class="group_name_container"
-            v-on:click="$emit('selection', {identity: 'none'})">
+            v-on:click="$emit('selection', {identity: 'none', properties: {_id: 'none'}})">
             <font-awesome-icon icon="users"/>
             <span>Users with no group</span>
           </div>
@@ -147,12 +149,15 @@ export default {
 
       groups: [],
       groups_loading: false,
+      groups_error: null,
 
       official_groups: [],
       official_groups_loading: false,
+      official_groups_error: null,
 
       non_official_groups: [],
       non_official_groups_loading: false,
+      non_official_groups_error: null,
     }
   },
   mounted(){
@@ -182,41 +187,49 @@ export default {
     },
     get_all_top_level_groups(){
 
-      this.$set(this.groups,'loading', true)
+      this.groups_loading = true
 
-      axios.get(`${this.groupManagerApiUrl}/v2/groups/top_level`)
-      .then( ({data}) => { this.groups = data })
+      const url = `${this.groupManagerApiUrl}/v3/groups`
+      const params = {top: true}
+      axios.get(url, {params})
+      .then( ({data}) => { this.groups = data.groups })
       .catch( (error) => {
         console.error(error)
-        this.$set(this.groups,'error', true)
+        this.groups_error = error
       })
-      .finally( () => { this.$set(this.groups,'loading', false) })
+      .finally( () => { this.groups_loading = false })
     },
     get_top_level_official_groups(){
-      //
-      this.$set(this.official_groups,'loading', true)
 
-      axios.get(`${this.groupManagerApiUrl}/v2/groups/top_level/official`)
-      .then( ({data}) => { this.official_groups = data })
+      //
+      this.official_groups_loading = true
+
+      const url = `${this.groupManagerApiUrl}/v3/groups`
+      const params = {top: true, official: true}
+      axios.get(url, {params})
+      .then( ({data}) => { this.official_groups = data.groups })
       .catch( (error) => {
         console.error(error)
-        this.$set(this.official_groups,'error', true)
+        this.official_groups_error = error
       })
-      .finally( () => { this.$set(this.official_groups,'loading', false) })
+      .finally( () => { this.official_groups_loading = false })
 
     },
 
     get_top_level_non_official_groups(){
       //
-      this.$set(this.non_official_groups,'loading', true)
+      this.non_official_groups_loading = true
 
-      axios.get(`${this.groupManagerApiUrl}/v2/groups/top_level/non_official`)
-      .then( ({data}) => { this.non_official_groups = data })
+      const url = `${this.groupManagerApiUrl}/v3/groups`
+      const params = {nonofficial: true, top: true}
+
+      axios.get(url, {params})
+      .then( ({data}) => { this.non_official_groups = data.groups })
       .catch( (error) => {
         console.error(error)
-        this.$set(this.non_official_groups,'error', true)
+        this.non_official_groups_error = error
       })
-      .finally( () => { this.$set(this.non_official_groups,'loading', false) })
+      .finally( () => { this.non_official_groups_loading = false })
 
     },
 

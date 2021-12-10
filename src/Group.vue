@@ -54,8 +54,8 @@
       <template v-if="!loading && !error">
 
         <group
-          v-for="child in groups"
-          v-bind:key="JSON.stringify(child.identity)"
+          v-for="(child, child_index) in groups"
+          v-bind:key="`${group_id}_child_${child_index}`"
           v-bind:groupManagerApiUrl="groupManagerApiUrl"
           v-on:selection="$emit('selection', $event)"
           v-bind:group="child"
@@ -138,8 +138,14 @@ export default {
   },
   methods: {
     auto_open(){
+      // Dirty but needs to account usage of new UUID
       const matching_group = this.groupsOfUser.find(group_of_user => {
-        return group_of_user.identity === this.group.identity
+
+        const group_id = group_of_user._id
+          || group_of_user.properties._id
+          || group_of_user.identity // delete when done
+
+        return group_id === this.group_id
       })
       if(matching_group) this.open_node()
     },
@@ -147,9 +153,13 @@ export default {
     open_node(){
       this.open = true
       this.loading = true
-      const url = `${this.groupManagerApiUrl}/v2/groups/${this.group_id}/groups/direct`
-      axios.get(url)
-      .then( ({data}) => { this.groups = data })
+      const url = `${this.groupManagerApiUrl}/v2/groups/${this.group_id}/groups`
+      const params = {direct: true}
+      axios.get(url, {params})
+      .then( ({data}) => {
+        this.groups = data
+        if(!this.groups.length) this.empty = true
+       })
       .catch( () => { this.error = `Error` })
       .finally( () => { this.loading = false })
     },
@@ -157,13 +167,15 @@ export default {
       this.open = false;
     },
     toggle_node(){
-      if(this.open) this.close_node();
-      else this.open_node();
+      if(this.open) this.close_node()
+      else this.open_node()
     }
   },
   computed: {
     group_id(){
-      return this.group.identity
+      return this.group._id
+        || this.group.properties._id
+        || this.group.identity // delete when done
     }
   }
 }
