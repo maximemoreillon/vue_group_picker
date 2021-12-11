@@ -80,6 +80,7 @@ import axios from 'axios'
 import Loader from '@moreillon/vue_loader'
 
 import Group from './Group.vue'
+import IdUtils from '@/IdUtils.js'
 
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -108,6 +109,7 @@ export default {
     FontAwesomeIcon,
 
   },
+  mixins: [IdUtils],
   props: {
     groupManagerApiUrl: {
       type: String,
@@ -139,14 +141,7 @@ export default {
   methods: {
     auto_open(){
       // Dirty but needs to account usage of new UUID
-      const matching_group = this.groupsOfUser.find(group_of_user => {
-
-        const group_id = group_of_user._id
-          || group_of_user.properties._id
-          || group_of_user.identity // delete when done
-
-        return group_id === this.group_id
-      })
+      const matching_group = this.groupsOfUser.find(group_of_user => this.get_id_of_item(group_of_user) === this.group_id)
       if(matching_group) this.open_node()
     },
 
@@ -173,9 +168,7 @@ export default {
   },
   computed: {
     group_id(){
-      return this.group._id
-        || this.group.properties._id
-        || this.group.identity // delete when done
+      return this.get_id_of_item(this.group)
     }
   }
 }
