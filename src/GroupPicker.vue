@@ -189,7 +189,7 @@ export default {
 
       this.groups_loading = true
 
-      const url = `${this.groupManagerApiUrl}/v3/groups`
+      const url = `${this.groupManagerApiUrl}/v2/groups`
       const params = {top: true}
       axios.get(url, {params})
       .then( ({data}) => { this.groups = data.groups })
@@ -204,7 +204,7 @@ export default {
       //
       this.official_groups_loading = true
 
-      const url = `${this.groupManagerApiUrl}/v3/groups`
+      const url = `${this.groupManagerApiUrl}/v2/groups`
       const params = {top: true, official: true}
       axios.get(url, {params})
       .then( ({data}) => { this.official_groups = data.groups })
@@ -220,7 +220,7 @@ export default {
       //
       this.non_official_groups_loading = true
 
-      const url = `${this.groupManagerApiUrl}/v3/groups`
+      const url = `${this.groupManagerApiUrl}/v2/groups`
       const params = {nonofficial: true, top: true}
 
       axios.get(url, {params})
