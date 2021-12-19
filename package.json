@@ -1,6 +1,6 @@
 {
   "name": "@moreillon/vue_group_picker",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "main": "dist/GroupPicker.umd.js",
   "unpkg": "dist/GroupPicker.umd.min.js",
   "module": "dist/GroupPicker.esm.js",
@@ -20,7 +20,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.14.0",
     "@fortawesome/vue-fontawesome": "^0.1.10",
     "@moreillon/vue_loader": "^0.1.1",
-    "axios": "^0.19.2",
+    "axios": "^0.24.0",
     "core-js": "^3.6.5",
     "vue": "^2.6.11",
     "vue-axios": "^2.1.5",
