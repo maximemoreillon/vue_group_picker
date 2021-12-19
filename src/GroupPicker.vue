@@ -115,7 +115,7 @@ library.add(
 export default {
   name: 'GroupPicker',
   props: {
-    
+
     groupManagerApiUrl: {
       type: String,
       default() {
