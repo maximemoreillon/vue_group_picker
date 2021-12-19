@@ -2,8 +2,7 @@
   <div id="app">
     <GroupPicker
       class="picker"
-      v-on:selection="selected($event)"
-      usersWithNoGroup/>
+      v-on:selection="selected($event)"/>
   </div>
 </template>
 
@@ -16,8 +15,8 @@ export default {
     GroupPicker
   },
   methods: {
-    selected(ev){
-      console.log(ev)
+    selected({name, _id}){
+      alert(`You selected group ${name} (ID ${_id})`)
     }
   }
 }

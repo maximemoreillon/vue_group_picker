@@ -115,6 +115,7 @@ library.add(
 export default {
   name: 'GroupPicker',
   props: {
+    
     groupManagerApiUrl: {
       type: String,
       default() {
@@ -127,6 +128,7 @@ export default {
         return process.env.VUE_APP_GROUP_MANAGER_FRONT_URL
       }
     },
+
     usersWithNoGroup: {
       type: Boolean,
       default(){return false}
@@ -161,15 +163,18 @@ export default {
     }
   },
   mounted(){
+
+    // Configure axios to use jwt in cookies
     const jwt = VueCookies.get('jwt') || VueCookies.get('token')
     if( jwt && !axios.defaults.headers.common.Authorization){
       axios.defaults.headers.common['Authorization'] = `Bearer ${jwt}`
     }
+
     this.get_groups_of_current_user()
   },
   methods: {
     get_groups_of_current_user(){
-      axios.get(`${this.groupManagerApiUrl}/v2/members/self/groups`)
+      axios.get(`${this.groupManagerApiUrl}/v3/members/self/groups`)
       .then( ({data}) => { this.groups_of_user = data })
       .catch( () => {})
       .finally( () => {
@@ -189,7 +194,7 @@ export default {
 
       this.groups_loading = true
 
-      const url = `${this.groupManagerApiUrl}/v2/groups`
+      const url = `${this.groupManagerApiUrl}/v3/groups`
       const params = {top: true}
       axios.get(url, {params})
       .then( ({data}) => { this.groups = data.groups })
@@ -201,10 +206,9 @@ export default {
     },
     get_top_level_official_groups(){
 
-      //
       this.official_groups_loading = true
 
-      const url = `${this.groupManagerApiUrl}/v2/groups`
+      const url = `${this.groupManagerApiUrl}/v3/groups`
       const params = {top: true, official: true}
       axios.get(url, {params})
       .then( ({data}) => { this.official_groups = data.groups })
@@ -217,10 +221,10 @@ export default {
     },
 
     get_top_level_non_official_groups(){
-      //
+
       this.non_official_groups_loading = true
 
-      const url = `${this.groupManagerApiUrl}/v2/groups`
+      const url = `${this.groupManagerApiUrl}/v3/groups`
       const params = {nonofficial: true, top: true}
 
       axios.get(url, {params})

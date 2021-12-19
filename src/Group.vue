@@ -22,15 +22,15 @@
 
         <img
           class="avatar"
-          v-if="group.properties.avatar_src"
-          v-bind:src="group.properties.avatar_src">
+          v-if="group.avatar_src"
+          v-bind:src="group.avatar_src">
 
         <font-awesome-icon
           icon="users"
           v-else/>
 
         <span>
-          {{group.properties.name || 'Unnamed group'}}
+          {{group.name || 'Unnamed group'}}
         </span>
 
       </div>
@@ -55,11 +55,11 @@
 
         <group
           v-for="(child, child_index) in groups"
-          v-bind:key="`${group_id}_child_${child_index}`"
+          :key="`${group_id}_child_${child_index}`"
           v-bind:groupManagerApiUrl="groupManagerApiUrl"
           v-on:selection="$emit('selection', $event)"
-          v-bind:group="child"
-          v-bind:groupsOfUser="groupsOfUser"/>
+          :group="child"
+          :groupsOfUser="groupsOfUser"/>
 
       </template>
 
@@ -132,27 +132,19 @@ export default {
     }
   },
   mounted(){
-
-    // Auto opening of user's units
-    this.auto_open()
+    this.auto_open() // Auto opening of user's groups
   },
   methods: {
-    get_id_of_item(item){
-      return item._id
-        || item.properties._id
-        || item.identity.low
-        || item.identity
-    },
+
     auto_open(){
-      // Dirty but needs to account usage of new UUID
-      const matching_group = this.groupsOfUser.find(group_of_user => this.get_id_of_item(group_of_user) === this.group_id)
+      const matching_group = this.groupsOfUser.find( ({_id}) => _id === this.group_id)
       if(matching_group) this.open_node()
     },
 
     open_node(){
       this.open = true
       this.loading = true
-      const url = `${this.groupManagerApiUrl}/v2/groups/${this.group_id}/groups`
+      const url = `${this.groupManagerApiUrl}/v3/groups/${this.group_id}/groups`
       const params = {direct: true}
       axios.get(url, {params})
       .then( ({data}) => {
@@ -172,7 +164,7 @@ export default {
   },
   computed: {
     group_id(){
-      return this.get_id_of_item(this.group)
+      return this.group._id
     }
   }
 }
