@@ -16,10 +16,8 @@ export default {
     GroupPicker
   },
   methods: {
-    selected(group){
-      if(!group) alert(`You selected no group`)
-      const {name, _id} = group
-      alert(`You selected group ${name} (ID ${_id})`)
+    selected({ _id}){
+      alert(`You selected group ${_id}`)
     }
   }
 }

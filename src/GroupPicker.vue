@@ -74,7 +74,7 @@
           <!-- This return is stupid -->
           <div
             class="group_name_container"
-            v-on:click="$emit('selection', null)">
+            v-on:click="$emit('selection', {_id: 'none'})">
             <font-awesome-icon icon="users"/>
             <span>Users with no group</span>
           </div>
