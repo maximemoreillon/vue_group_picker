@@ -148,8 +148,8 @@ export default {
       const params = {direct: true}
       axios.get(url, {params})
       .then( ({data}) => {
-        this.groups = data
-        if(!this.groups.length) this.empty = true
+        this.groups = data.items
+        if(!data.count) this.empty = true
        })
       .catch( () => { this.error = `Error` })
       .finally( () => { this.loading = false })

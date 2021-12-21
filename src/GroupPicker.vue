@@ -74,7 +74,7 @@
           <!-- This return is stupid -->
           <div
             class="group_name_container"
-            v-on:click="$emit('selection', {identity: 'none', properties: {_id: 'none'}})">
+            v-on:click="$emit('selection', null)">
             <font-awesome-icon icon="users"/>
             <span>Users with no group</span>
           </div>
@@ -115,7 +115,6 @@ library.add(
 export default {
   name: 'GroupPicker',
   props: {
-
     groupManagerApiUrl: {
       type: String,
       default() {
@@ -128,7 +127,6 @@ export default {
         return process.env.VUE_APP_GROUP_MANAGER_FRONT_URL
       }
     },
-
     usersWithNoGroup: {
       type: Boolean,
       default(){return false}
@@ -175,7 +173,7 @@ export default {
   methods: {
     get_groups_of_current_user(){
       axios.get(`${this.groupManagerApiUrl}/v3/members/self/groups`)
-      .then( ({data}) => { this.groups_of_user = data })
+      .then( ({data}) => { this.groups_of_user = data.items })
       .catch( () => {})
       .finally( () => {
 
@@ -195,9 +193,9 @@ export default {
       this.groups_loading = true
 
       const url = `${this.groupManagerApiUrl}/v3/groups`
-      const params = {top: true}
+      const params = {shallow: true}
       axios.get(url, {params})
-      .then( ({data}) => { this.groups = data.groups })
+      .then( ({data}) => { this.groups = data.items })
       .catch( (error) => {
         console.error(error)
         this.groups_error = error
@@ -209,9 +207,9 @@ export default {
       this.official_groups_loading = true
 
       const url = `${this.groupManagerApiUrl}/v3/groups`
-      const params = {top: true, official: true}
+      const params = {shallow: true, official: true}
       axios.get(url, {params})
-      .then( ({data}) => { this.official_groups = data.groups })
+      .then( ({data}) => { this.official_groups = data.items })
       .catch( (error) => {
         console.error(error)
         this.official_groups_error = error
@@ -225,10 +223,10 @@ export default {
       this.non_official_groups_loading = true
 
       const url = `${this.groupManagerApiUrl}/v3/groups`
-      const params = {nonofficial: true, top: true}
+      const params = {nonofficial: true, shallow: true}
 
       axios.get(url, {params})
-      .then( ({data}) => { this.non_official_groups = data.groups })
+      .then( ({data}) => { this.non_official_groups = data.items })
       .catch( (error) => {
         console.error(error)
         this.non_official_groups_error = error
