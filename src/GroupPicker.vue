@@ -1,8 +1,7 @@
 <template>
   <div class="group_picker">
 
-    <!-- spacing wrapper used as artificial margin -->
-    <div class="spacing_wrapper">
+
 
       <!-- Official (non-user-made) groups -->
       <div class="category_title">Official groups</div>
@@ -15,17 +14,18 @@
           :key="`official_group_${index}`"
           :groupManagerApiUrl="groupManagerApiUrl"
           :groupManagerFrontUrl="groupManagerFrontUrl"
-          v-on:selection="$emit('selection',$event)"
+          @selection="$emit('selection',$event)"
           :groupsOfUser="groups_of_user"/>
 
       </template>
       <loader v-if="official_groups_loading"/>
       <div
-        class="error_message"
+        class="group_picker_error"
         v-if="official_groups.error">
         Error loading groups
       </div>
 
+      <!-- Non official (user mande) groups -->
       <div class="category_title">Non-official groups</div>
       <template
         v-if="!non_official_groups_loading && non_official_groups.length">
@@ -35,13 +35,13 @@
           :key="`non_official_group_${index}`"
           :groupManagerApiUrl="groupManagerApiUrl"
           :groupManagerFrontUrl="groupManagerFrontUrl"
-          v-on:selection="$emit('selection',$event)"
+          @selection="$emit('selection',$event)"
           :groupsOfUser="groups_of_user"/>
 
       </template>
       <loader v-if="non_official_groups_loading"/>
       <div
-        class="error_message"
+        class="group_picker_error"
         v-if="non_official_groups_error">
         Error loading groups
       </div>
@@ -54,34 +54,35 @@
           :key="`any_${index}`"
           :groupManagerApiUrl="groupManagerApiUrl"
           :groupManagerFrontUrl="groupManagerFrontUrl"
-          v-on:selection="$emit('selection',$event)"
+          @selection="$emit('selection',$event)"
           :groupsOfUser="groups_of_user"/>
-
       </template>
+
       <loader v-if="groups_loading"/>
       <div
-        class="error_message"
+        class="group_picker_error"
         v-if="groups_error">
         Error loading groups
       </div>
 
       <template v-if="usersWithNoGroup">
         <div class="category_title">Other</div>
-        <div class="group_container">
-          <font-awesome-icon
-            icon="minus"/>
+        <div class="group_picker_group_container">
+
+          <div
+            class="group_picker_cannot_expand"/>
 
           <!-- This return is stupid -->
           <div
-            class="group_name_container"
+            class="group_picker_name_container"
             v-on:click="$emit('selection', {_id: 'none'})">
-            <font-awesome-icon icon="users"/>
+            <!-- <font-awesome-icon icon="users"/> -->
+            <AccountMultipleIcon class="icon"/>
             <span>Users with no group</span>
           </div>
         </div>
       </template>
 
-    </div>
 
   </div>
 
@@ -94,23 +95,8 @@ import VueCookies from 'vue-cookies'
 import Group from './Group.vue'
 import Loader from '@moreillon/vue_loader'
 
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import {
-  faUsers,
-  faChevronRight,
-  faMinus,
-  faInfoCircle,
-  faExternalLinkAlt,
-} from '@fortawesome/free-solid-svg-icons'
+import AccountMultipleIcon from 'vue-material-design-icons/AccountMultiple.vue';
 
-library.add(
-  faUsers,
-  faChevronRight,
-  faInfoCircle,
-  faMinus,
-  faExternalLinkAlt,
-)
 
 export default {
   name: 'GroupPicker',
@@ -139,7 +125,7 @@ export default {
   components: {
     Group,
     Loader,
-    FontAwesomeIcon,
+    AccountMultipleIcon
 
 
   },
@@ -172,9 +158,12 @@ export default {
   },
   methods: {
     get_groups_of_current_user(){
-      axios.get(`${this.groupManagerApiUrl}/v3/members/self/groups`)
+      const url = `${this.groupManagerApiUrl}/v3/members/self/groups`
+      axios.get(url)
       .then( ({data}) => { this.groups_of_user = data.items })
-      .catch( () => {})
+      .catch( () => {
+        console.error(`Group picker failed to query groups of user`);
+      })
       .finally( () => {
 
         if(this.distinguishOfficialGroups){
@@ -245,8 +234,8 @@ export default {
 
 .group_picker {
 
-  /* put height 100%? */
   overflow-y: auto;
+  padding: 0.5em;
 
   border: 1px solid #dddddd;
 }
@@ -256,7 +245,7 @@ export default {
   align-items: center;
   justify-content: center;
   font-size: 150%;
-  padding: 10px;
+  padding: 0 1em;
 }
 
 .category_title {
@@ -264,46 +253,81 @@ export default {
   margin: 0.75em 0;
 }
 
+</style>
 
-.spacing_wrapper {
-  margin: 0.5em;
+<style>
+/* Global styles */
+
+.group_picker_error {
+  color: #c00000;
 }
 
-/* for the "users with no groups" groups */
-.group_container {
+.group_picker_name_container {
+
   display: flex;
   align-items: center;
-  transition: background-color 0.25s;
-}
+  gap: 0.5em;
 
-.group_container:hover {
-  background-color: #eeeeee;
-}
 
-.group_container > * {
-  cursor: pointer;
-}
-
-.group_name_container {
-  margin-left: 0.5em;
   flex-grow: 1;
+
+  /* What color? */
   transition: color 0.25s;
 
   white-space: nowrap;
   overflow: hidden;
+
+  /* Ellipsis does not work because of flex */
   text-overflow: ellipsis;
-}
 
-.group_name_container > *:not(:last-child) {
-  margin-right: 0.5em;
-}
-
-.group_name_container{
   cursor: pointer;
   transition: background-color 0.25s;
 }
 
-.error_message {
-  color: #c00000;
+
+.group_picker_group_container {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  transition: background-color 0.25s;
+
 }
+
+.group_picker_group_container:hover {
+  background-color: #eeeeee;
+}
+
+/* Properly aligning icons */
+.group_picker .material-design-icon {
+  display: flex;
+  align-items: center;
+}
+
+.group_picker_avatar {
+  height: 1.5em;
+  width: 1.5em;
+}
+
+.group_picker_expand_button,
+.group_picker_cannot_expand,
+.group_picker_loader {
+  height: 1.5em;
+  width: 1.5em;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.group_picker_expand_button{
+  /* center button in div */
+  cursor: pointer;
+  display: flex;
+
+
+
+  transition:
+    transform 0.25s,
+    color 0.25s;
+}
+
 </style>

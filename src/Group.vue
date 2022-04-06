@@ -1,33 +1,31 @@
 <template>
   <div class="group">
 
-    <div class="current_group_container">
+    <div class="group_picker_group_container">
 
-      <!-- button to expand or contract the node -->
-      <font-awesome-icon
-        icon="chevron-right"
+      <!-- button to expand or contract the group -->
+      <ChevronRightIcon
         v-if="!empty"
-        class="expand_button"
-        v-bind:class="{chevron_open: open}"
-        v-on:click="toggle_node()"/>
+        class="group_picker_expand_button"
+        :class="{chevron_open: open}"
+        @click="toggle_node()"/>
 
-      <font-awesome-icon
-        icon="minus"
+      <MinusIcon
+        class="group_picker_cannot_expand"
         v-else/>
 
-
       <div
-        class="group_name_container"
-        v-on:click="$emit('selection',group)">
+        class="group_picker_name_container"
+        @click="$emit('selection',group)">
 
         <img
-          class="avatar"
+          class="group_picker_avatar"
           v-if="group.avatar_src"
           v-bind:src="group.avatar_src">
 
-        <font-awesome-icon
-          icon="users"
-          v-else/>
+        <AccountMultipleIcon
+          class="group_picker_avatar"
+          v-else />
 
         <span>
           {{group.name || 'Unnamed group'}}
@@ -39,14 +37,13 @@
       <a
         v-if="groupManagerFrontUrl"
         :href="`${groupManagerFrontUrl}/groups/${group_id}`"
-        v-on:click.stop>
-        <font-awesome-icon
-          icon="external-link-alt"/>
+        @click.stop>
+        <OpenInNewIcon/>
       </a>
 
     </div>
 
-    <!-- The children nodes -->
+    <!-- The children groups -->
     <div
       v-if="open"
       class="children_container">
@@ -56,16 +53,21 @@
         <group
           v-for="(child, child_index) in groups"
           :key="`${group_id}_child_${child_index}`"
-          v-bind:groupManagerApiUrl="groupManagerApiUrl"
-          v-on:selection="$emit('selection', $event)"
+          :groupManagerApiUrl="groupManagerApiUrl"
+          :groupsOfUser="groupsOfUser"
           :group="child"
-          :groupsOfUser="groupsOfUser"/>
+          @selection="$emit('selection', $event)"
+          />
 
       </template>
 
-      <Loader v-if="loading && !error"/>
+      <Loader
+        class="group_picker_loader"
+        v-if="loading && !error"/>
 
-      <div class="error_message" v-if="error">
+      <div
+        class="group_picker_error"
+        v-if="error">
         {{error}}
       </div>
 
@@ -76,36 +78,26 @@
 
 <script>
 import axios from 'axios'
-//import VueCookies from 'vue-cookies'
 import Loader from '@moreillon/vue_loader'
 
 import Group from './Group.vue'
 
+import AccountMultipleIcon from 'vue-material-design-icons/AccountMultiple.vue';
+import ChevronRightIcon from 'vue-material-design-icons/ChevronRight.vue';
+import MinusIcon from 'vue-material-design-icons/Minus.vue';
+import OpenInNewIcon from 'vue-material-design-icons/OpenInNew.vue';
 
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import {
-  faUsers,
-  faChevronRight,
-  faMinus,
-  faInfoCircle,
-  faExternalLinkAlt,
-} from '@fortawesome/free-solid-svg-icons'
 
-library.add(
-  faUsers,
-  faChevronRight,
-  faInfoCircle,
-  faMinus,
-  faExternalLinkAlt,
-)
 export default {
   name: 'Group',
   components: {
     Loader,
     Group,
 
-    FontAwesomeIcon,
+    AccountMultipleIcon,
+    ChevronRightIcon,
+    MinusIcon,
+    OpenInNewIcon,
 
   },
   props: {
@@ -132,13 +124,12 @@ export default {
     }
   },
   mounted(){
-    this.auto_open() // Auto opening of user's groups
+    this.auto_open()
   },
   methods: {
 
     auto_open(){
-      const matching_group = this.groupsOfUser.find( ({_id}) => _id === this.group_id)
-      if(matching_group) this.open_node()
+      if(this.groupsOfUser.some( ({_id}) => _id === this.group_id)) this.open_node()
     },
 
     open_node(){
@@ -177,42 +168,10 @@ export default {
   margin: 0.25em 0;
 }
 
-.current_group_container {
-  display: flex;
-  align-items: center;
-  transition: background-color 0.25s;
-}
-
-.current_group_container:hover {
-  background-color: #eeeeee;
-}
-
-.current_group_container > * {
-  cursor: pointer;
-}
 
 
-.expand_button{
-  /* center button in div */
 
-
-  /* make container square for proper rotation */
-  width: 1em;
-  height: 1em;
-
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-
-
-  transition:
-    transform 0.25s,
-    color 0.25s;
-}
-
-.expand_button:hover {
+.group_picker_expand_button:hover {
   color: #c00000;
 }
 
@@ -220,45 +179,38 @@ export default {
   transform: rotate(90deg);
 }
 
-.group_name_container {
-  margin-left: 0.5em;
-  flex-grow: 1;
-  transition: color 0.25s;
 
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.group_name_container > *:not(:last-child) {
-  margin-right: 0.5em;
-}
-
-.children_container{
-
-  /* content of this is a CorporateStructureNode */
+.children_container {
 
   /* compound spacing for border indicating ident */
-  padding-left: 0.5em; /* indent for children nodes */
-  margin-left: 0.5em; /* indent for children nodes */
+  padding-left: 0.75em; /* indent for children nodes */
+  margin-left: 0.75em; /* indent for children nodes */
+
+  /* Vertical line to show indent */
   border-left: 1px solid #dddddd;
 }
 
+/* Links to group page */
+
 a {
+  opacity: 0;
   text-decoration: none;
   color: currentColor;
-  transition: color 0.25s;
+  transition:
+    color 0.25s,
+    opacity 0.25s;
 }
 
 a:hover {
   color: #c00000;
 }
 
-.avatar {
-  height: 1em;
-  width: 1em;
-  object-fit: contain;
+.group_picker_group_container:hover a {
+  opacity: 1;
 }
+
+
+
 
 
 </style>
