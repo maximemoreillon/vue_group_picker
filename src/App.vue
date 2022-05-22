@@ -2,7 +2,9 @@
   <div id="app">
     <GroupPicker
       class="picker"
-      v-on:selection="selected($event)"
+      :selectedGroup="selectedGroup"
+      @selection="selected($event)"
+
       usersWithNoGroup/>
   </div>
 </template>
@@ -15,9 +17,15 @@ export default {
   components: {
     GroupPicker
   },
+  data(){
+    return {
+      selectedGroup: null,
+    }
+  },
   methods: {
     selected({ _id}){
       alert(`You selected group ${_id}`)
+      this.selectedGroup = _id
     }
   }
 }

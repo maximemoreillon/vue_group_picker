@@ -1,7 +1,10 @@
 <template>
-  <div class="group">
+  <div 
+    class="group">
 
-    <div class="group_picker_group_container">
+    <div 
+      :class="{selected}"
+      class="group_picker_group_container">
 
       <!-- button to expand or contract the group -->
       <ChevronRightIcon
@@ -56,6 +59,7 @@
           :groupManagerApiUrl="groupManagerApiUrl"
           :groupsOfUser="groupsOfUser"
           :group="child"
+          :selectedGroup="selectedGroup"
           @selection="$emit('selection', $event)"
           />
 
@@ -82,10 +86,10 @@ import Loader from '@moreillon/vue_loader'
 
 import Group from './Group.vue'
 
-import AccountMultipleIcon from 'vue-material-design-icons/AccountMultiple.vue';
-import ChevronRightIcon from 'vue-material-design-icons/ChevronRight.vue';
-import MinusIcon from 'vue-material-design-icons/Minus.vue';
-import OpenInNewIcon from 'vue-material-design-icons/OpenInNew.vue';
+import AccountMultipleIcon from 'vue-material-design-icons/AccountMultiple.vue'
+import ChevronRightIcon from 'vue-material-design-icons/ChevronRight.vue'
+import MinusIcon from 'vue-material-design-icons/Minus.vue'
+import OpenInNewIcon from 'vue-material-design-icons/OpenInNew.vue'
 
 
 export default {
@@ -112,6 +116,7 @@ export default {
 
     group: Object,
     groupsOfUser: Array,
+    selectedGroup: String,
   },
   data(){
     return{
@@ -156,6 +161,9 @@ export default {
   computed: {
     group_id(){
       return this.group._id
+    },
+    selected(){
+      return this.group_id === this.selectedGroup
     }
   }
 }
@@ -169,7 +177,9 @@ export default {
 }
 
 
-
+.selected {
+  background-color: #eeeeee;
+}
 
 .group_picker_expand_button:hover {
   color: #c00000;
