@@ -11,7 +11,7 @@
         <Group
           v-for="(group, index) in official_groups"
           :group="group"
-          :selectedGroup="selectedGroup"
+          :selectedGroupId="selectedGroupId"
           :groupsOfUser="groups_of_user"
           :key="`official_group_${index}`"
           :groupManagerApiUrl="groupManagerApiUrl"
@@ -33,7 +33,7 @@
         <Group
           v-for="(group, index) in non_official_groups"
           :group="group"
-          :selectedGroup="selectedGroup"
+          :selectedGroupId="selectedGroupId"
           :groupsOfUser="groups_of_user"
           :key="`non_official_group_${index}`"
           :groupManagerApiUrl="groupManagerApiUrl"
@@ -53,7 +53,7 @@
         <Group
           v-for="(group, index) in groups"
           :group="group"
-          :selectedGroup="selectedGroup"
+          :selectedGroupId="selectedGroupId"
           :groupsOfUser="groups_of_user"
           :key="`any_${index}`"
           :groupManagerApiUrl="groupManagerApiUrl"
@@ -119,7 +119,7 @@ export default {
       type: Boolean,
       default: () => true 
     },
-    selectedGroup: String,
+    selectedGroupId: String,
 
   },
   components: {

@@ -2,7 +2,7 @@
   <div id="app">
     <GroupPicker
       class="picker"
-      :selectedGroup="selectedGroup"
+      :selectedGroupId="selectedGroupId"
       @selection="selected($event)"
 
       usersWithNoGroup/>
@@ -19,13 +19,13 @@ export default {
   },
   data(){
     return {
-      selectedGroup: null,
+      selectedGroupId: null,
     }
   },
   methods: {
     selected({ _id}){
       alert(`You selected group ${_id}`)
-      this.selectedGroup = _id
+      this.selectedGroupId = _id
     }
   }
 }

@@ -59,7 +59,7 @@
           :groupManagerApiUrl="groupManagerApiUrl"
           :groupsOfUser="groupsOfUser"
           :group="child"
-          :selectedGroup="selectedGroup"
+          :selectedGroupId="selectedGroupId"
           @selection="$emit('selection', $event)"
           />
 
@@ -116,7 +116,7 @@ export default {
 
     group: Object,
     groupsOfUser: Array,
-    selectedGroup: String,
+    selectedGroupId: String,
   },
   data(){
     return{
@@ -163,7 +163,7 @@ export default {
       return this.group._id
     },
     selected(){
-      return this.group_id === this.selectedGroup
+      return this.group_id === this.selectedGroupId
     }
   }
 }
