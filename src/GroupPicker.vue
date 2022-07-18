@@ -306,6 +306,7 @@ export default {
 .group_picker_avatar {
   height: 1.5em;
   width: 1.5em;
+  object-fit: contain;
 }
 
 .group_picker_expand_button,

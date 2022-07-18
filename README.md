@@ -1,24 +1,32 @@
-# vue_group_picker
+# Group picker
 
-## Project setup
+A Vue.js component to select a group from those managed by the [group management microservice](https://github.com/maximemoreillon/group_manager)
+
+## Usage
+
 ```
-npm install
+<template>
+  <div id="app">
+    <GroupPicker
+      @selection="selected($event)"
+      groupManagerApiUrl="http://api.groups.example.com"/>
+  </div>
+</template>
+
+<script>
+import GroupPicker from './GroupPicker.vue'
+
+export default {
+  name: 'App',
+  components: {
+    GroupPicker
+  },
+  methods: {
+    selected({ _id}){
+      alert(`You selected group ${_id}`)
+    }
+  }
+}
+</script>
 ```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
-
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

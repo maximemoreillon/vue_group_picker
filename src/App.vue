@@ -4,7 +4,6 @@
       class="picker"
       :selectedGroupId="selectedGroupId"
       @selection="selected($event)"
-
       usersWithNoGroup/>
   </div>
 </template>
