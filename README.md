@@ -16,7 +16,7 @@ A Vue.js component to select a group from those managed by the [group management
 </template>
 
 <script>
-import GroupPicker from './GroupPicker.vue'
+import GroupPicker from '@moreillon/vue_group_picker'
 
 export default {
   name: 'App',
