@@ -149,7 +149,10 @@ export default {
   mounted(){
 
     // Configure axios to use jwt in cookies
-    const jwt = VueCookies.get('jwt') || VueCookies.get('token')
+    const jwt = VueCookies.get('jwt') 
+      || VueCookies.get('token')
+      || localStorage.getItem('jwt')
+      
     if( jwt && !axios.defaults.headers.common.Authorization){
       axios.defaults.headers.common['Authorization'] = `Bearer ${jwt}`
     }
