@@ -178,7 +178,7 @@ export default {
 
 
 .selected {
-  background-color: #eeeeee;
+  background-color: #88888888;
 }
 
 .group_picker_expand_button:hover {

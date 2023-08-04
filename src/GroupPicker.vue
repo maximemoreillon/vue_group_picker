@@ -297,7 +297,7 @@ export default {
 }
 
 .group_picker_group_container:hover {
-  background-color: #eeeeee;
+  background-color: #88888888;
 }
 
 /* Properly aligning icons */
