@@ -103,6 +103,10 @@ import AccountMultipleIcon from 'vue-material-design-icons/AccountMultiple.vue';
 export default {
   name: 'GroupPicker',
   props: {
+    accessToken: {
+      type: String,
+      default: () => null,
+    },
     groupManagerApiUrl: {
       type: String,
       default: () => process.env.VUE_APP_GROUP_MANAGER_API_URL
@@ -146,15 +150,22 @@ export default {
       non_official_groups_error: null,
     }
   },
-  mounted(){
-
-    // Configure axios to use jwt in cookies
-    const jwt = VueCookies.get('jwt') 
-      || VueCookies.get('token')
-      || localStorage.getItem('jwt')
+  mounted() {
+    if (this.accessToken) {
+      delete this.axios.defaults.headers.common["Authorization"];
+      axios.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${this.accessToken}`;
+    } else {
+      // If no access token is provided, configure axios to use jwt in cookies
+      const jwt =
+        VueCookies.get("jwt") ||
+        VueCookies.get("token") ||
+        localStorage.getItem("jwt");
       
-    if( jwt && !axios.defaults.headers.common.Authorization){
-      axios.defaults.headers.common['Authorization'] = `Bearer ${jwt}`
+      if (jwt && !axios.defaults.headers.common.Authorization) {
+        axios.defaults.headers.common["Authorization"] = `Bearer ${jwt}`;
+      }
     }
 
     this.get_groups_of_current_user()
