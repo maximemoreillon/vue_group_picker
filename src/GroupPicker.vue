@@ -151,24 +151,28 @@ export default {
     }
   },
   mounted() {
-    if (this.accessToken) {
-      delete this.axios.defaults.headers.common["Authorization"];
-      axios.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${this.accessToken}`;
-    } else {
-      // If no access token is provided, configure axios to use jwt in cookies
+    this.get_groups_of_current_user();
+  },
+  watch: {
+    accessToken: {
+      immediate: true,
+      handler(newToken) {
+        if (newToken) {
+          delete axios.defaults.headers.common["Authorization"];
+          axios.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
+        } else {
       const jwt =
         VueCookies.get("jwt") ||
         VueCookies.get("token") ||
         localStorage.getItem("jwt");
-      
+
+          // If no access token is provided, configure axios to use JWT in cookies
       if (jwt && !axios.defaults.headers.common.Authorization) {
         axios.defaults.headers.common["Authorization"] = `Bearer ${jwt}`;
       }
     }
-
-    this.get_groups_of_current_user()
+      },
+    },
   },
   methods: {
     get_groups_of_current_user(){
