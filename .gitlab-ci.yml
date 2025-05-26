@@ -3,6 +3,9 @@ stages:
 
 publish:
   stage: publish
+  only:
+    - master
+    - main
   tags:
     - moreillon
   script:
