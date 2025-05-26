@@ -81,10 +81,10 @@
 </template>
 
 <script>
-import axios from 'axios'
-import Loader from '@moreillon/vue_loader'
+import Group from "./Group.vue";
+import Loader from "@moreillon/vue_loader";
 
-import Group from './Group.vue'
+import { useFetch } from "./requestWrapper";
 
 import AccountMultipleIcon from 'vue-material-design-icons/AccountMultiple.vue'
 import ChevronRightIcon from 'vue-material-design-icons/ChevronRight.vue'
@@ -105,6 +105,10 @@ export default {
 
   },
   props: {
+    accessToken: {
+      type: String,
+      default: () => null,
+    },
     groupManagerApiUrl: {
       type: String,
       default() { return process.env.VUE_APP_GROUP_MANAGER_URL },
@@ -137,15 +141,15 @@ export default {
       if(this.groupsOfUser.some( ({_id}) => _id === this.group_id)) this.open_node()
     },
 
-    open_node(){
-      this.open = true
-      this.loading = true
-      const url = `${this.groupManagerApiUrl}/v3/groups/${this.group_id}/groups`
-      const params = {direct: true}
-      axios.get(url, {params})
-      .then( ({data}) => {
-        this.groups = data.items
-        if(!data.count) this.empty = true
+    open_node() {
+      this.open = true;
+      this.loading = true;
+      const url = `${this.groupManagerApiUrl}/v3/groups/${this.group_id}/groups`;
+      const params = { direct: true };
+      useFetch(url, params, this.accessToken)
+        .then(({ data }) => {
+          this.groups = data.items;
+          if (!data.count) this.empty = true;
        })
       .catch( () => { this.error = `Error` })
       .finally( () => { this.loading = false })

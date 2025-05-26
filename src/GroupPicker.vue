@@ -91,11 +91,10 @@
 </template>
 
 <script>
+import Group from "./Group.vue";
+import Loader from "@moreillon/vue_loader";
 
-import axios from 'axios'
-import VueCookies from 'vue-cookies'
-import Group from './Group.vue'
-import Loader from '@moreillon/vue_loader'
+import { useFetch } from "./requestWrapper";
 
 import AccountMultipleIcon from 'vue-material-design-icons/AccountMultiple.vue';
 
@@ -153,33 +152,14 @@ export default {
   mounted() {
     this.get_groups_of_current_user();
   },
-  watch: {
-    accessToken: {
-      immediate: true,
-      handler(newToken) {
-        if (newToken) {
-          delete axios.defaults.headers.common["Authorization"];
-          axios.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
-        } else {
-      const jwt =
-        VueCookies.get("jwt") ||
-        VueCookies.get("token") ||
-        localStorage.getItem("jwt");
-
-          // If no access token is provided, configure axios to use JWT in cookies
-      if (jwt && !axios.defaults.headers.common.Authorization) {
-        axios.defaults.headers.common["Authorization"] = `Bearer ${jwt}`;
-      }
-    }
-      },
-    },
-  },
   methods: {
-    get_groups_of_current_user(){
-      const url = `${this.groupManagerApiUrl}/v3/members/self/groups`
-      axios.get(url)
-      .then( ({data}) => { this.groups_of_user = data.items })
-      .catch( () => {
+    get_groups_of_current_user() {
+      const url = `${this.groupManagerApiUrl}/v3/members/self/groups`;
+      useFetch(url, {}, this.accessToken)
+        .then(({ data }) => {
+          this.groups_of_user = data.items;
+        })
+        .catch(() => {
         console.error(`Group picker failed to query groups of user`);
       })
       .finally( () => {
@@ -199,13 +179,15 @@ export default {
 
       this.groups_loading = true
 
-      const url = `${this.groupManagerApiUrl}/v3/groups`
-      const params = {shallow: true}
-      axios.get(url, {params})
-      .then( ({data}) => { this.groups = data.items })
-      .catch( (error) => {
-        console.error(error)
-        this.groups_error = error
+      const url = `${this.groupManagerApiUrl}/v3/groups`;
+      const params = { shallow: true };
+      useFetch(url, params, this.accessToken)
+        .then(({ data }) => {
+          this.groups = data.items;
+        })
+        .catch((error) => {
+          console.error(error);
+          this.groups_error = error;
       })
       .finally( () => { this.groups_loading = false })
     },
@@ -213,13 +195,15 @@ export default {
 
       this.official_groups_loading = true
 
-      const url = `${this.groupManagerApiUrl}/v3/groups`
-      const params = {shallow: true, official: true}
-      axios.get(url, {params})
-      .then( ({data}) => { this.official_groups = data.items })
-      .catch( (error) => {
-        console.error(error)
-        this.official_groups_error = error
+      const url = `${this.groupManagerApiUrl}/v3/groups`;
+      const params = { shallow: true, official: true };
+      useFetch(url, params, this.accessToken)
+        .then(({ data }) => {
+          this.official_groups = data.items;
+        })
+        .catch((error) => {
+          console.error(error);
+          this.official_groups_error = error;
       })
       .finally( () => { this.official_groups_loading = false })
 
@@ -229,14 +213,16 @@ export default {
 
       this.non_official_groups_loading = true
 
-      const url = `${this.groupManagerApiUrl}/v3/groups`
-      const params = {nonofficial: true, shallow: true}
+      const url = `${this.groupManagerApiUrl}/v3/groups`;
+      const params = { nonofficial: true, shallow: true };
 
-      axios.get(url, {params})
-      .then( ({data}) => { this.non_official_groups = data.items })
-      .catch( (error) => {
-        console.error(error)
-        this.non_official_groups_error = error
+      useFetch(url, params, this.accessToken)
+        .then(({ data }) => {
+          this.non_official_groups = data.items;
+        })
+        .catch((error) => {
+          console.error(error);
+          this.non_official_groups_error = error;
       })
       .finally( () => { this.non_official_groups_loading = false })
 
