@@ -60,6 +60,7 @@
           :groupsOfUser="groupsOfUser"
           :group="child"
           :selectedGroupId="selectedGroupId"
+          :accessToken="accessToken"
           @selection="$emit('selection', $event)"
           />
 
