@@ -16,8 +16,9 @@
           :key="`official_group_${index}`"
           :groupManagerApiUrl="groupManagerApiUrl"
           :groupManagerFrontUrl="groupManagerFrontUrl"
-          @selection="$emit('selection',$event)" />
-
+        :accessToken="accessToken"
+        @selection="$emit('selection', $event)"
+      />
       </template>
       <loader v-if="official_groups_loading"/>
       <div
@@ -38,8 +39,9 @@
           :key="`non_official_group_${index}`"
           :groupManagerApiUrl="groupManagerApiUrl"
           :groupManagerFrontUrl="groupManagerFrontUrl"
-          @selection="$emit('selection',$event)" />
-
+        :accessToken="accessToken"
+        @selection="$emit('selection', $event)"
+      />
       </template>
       <loader v-if="non_official_groups_loading"/>
       <div
@@ -58,7 +60,9 @@
           :key="`any_${index}`"
           :groupManagerApiUrl="groupManagerApiUrl"
           :groupManagerFrontUrl="groupManagerFrontUrl"
-          @selection="$emit('selection',$event)" />
+        :accessToken="accessToken"
+        @selection="$emit('selection', $event)"
+      />
       </template>
 
       <loader v-if="groups_loading"/>
